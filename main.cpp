@@ -21,7 +21,7 @@ map<string, array<array<double, 7>, 2> > myIndex;
 map<int, string> intToStringMap; // Recorder to find each gate in myMap
 map<int, double> arriveTimes; // record arrival time for each gate
 map<int, double> slewValue; // record slew value for each gate
-map<int, double> maxDelayValues; // record min delay value for each gate *****
+map<int, double> maxDelayValues; // record min delay value for each gate
 
 double maxCircuitDelay = 0;
 vector<int> criticalPath;
@@ -228,9 +228,9 @@ void computeGateDelay(int gateIndex) {
         if (count >= 2){
             curDelay = curDelay * (count/2.0);
             curSlewValue =  curSlewValue * (count/2.0);
-            arriveTime += curDelay;
+            arriveTime += curDelay + inputSlew;
         }else{
-            arriveTime += curDelay;
+            arriveTime += curDelay + inputSlew;
         }
 
         if (arriveTime > maxArrive){
@@ -403,13 +403,35 @@ int outputToFile(){
     file << "Circuit delay: " << maxCircuitDelay*1000 << "ps\n\n";
     file << "Gate slacks:\n";
     
-    for (const auto& entry : slackTime) {
+    for (const auto& entry : slackTime) { // INPUT
         int gateID = entry.first;
         double slack = entry.second;
         if (slack != 0) {
             int gateType = gates[gateID].front();
             string gateTypeName = intToStringMap[gateType];
-            file << gateTypeName << "-n" << gateID+1 << ": " << slack*1000 << "ps\n";
+            if (gateTypeName == "INPUT"){
+                file << "INPUT" << "-n" << gateID+1 << ": " << slack*1000 << "ps\n";
+            }
+        }
+    }
+    for (const auto& entry : slackTime) { // OUPUT
+        int gateID = entry.first;
+        double slack = entry.second;
+        if (slack != 0) {
+            if (fanouts[gateID].empty()){
+                file << "OUTPUT" << "-n" << gateID+1 << ": " << slack*1000 << "ps\n";
+            }
+        }
+    }
+    for (const auto& entry : slackTime) { //GATE TYPE
+        int gateID = entry.first;
+        double slack = entry.second;
+        if (slack != 0) {
+            int gateType = gates[gateID].front();
+            string gateTypeName = intToStringMap[gateType];
+            if (gateTypeName != "INPUT"){
+                file << gateTypeName << "-n" << gateID+1 << ": " << slack*1000 << "ps\n";
+            }
         }
     }
 
