@@ -1,0 +1,64 @@
+Project Description:
+    This project will calculate the delay of a circuit by performing static timing analysis (STA) on it by topological traversal of a graph. Each node of the graph corresponds to each gate of the circuit, while each edge denotes a wire connection. The delay of each gate is a nonlinear function of its load capacitance and the input slew.
+
+Some comments:
+
+    The [Circuit delay] I got is the same as the Sample Output (c1908_.isc), which is 1012.29ps, but there is only a small difference in the [Gate slacks] for part of gates, which may be related to the calculation of significant digits retained by the decimal, but it does not affect the correct [critical path], which is basically same as in the Sample Output (Although path may not be unique).
+
+Way to run the project:
+
+    1. Typing "make" should produce an executable called "sta".
+    2. Typing "make [file name w/o .isc]" to write all ouputs to "ckt_traversal.txt". For example "make c1908_"
+    3. You will see a message in terminal "Data written to ckt_traversal.txt successfully." which means project runs successfully.
+    4. "make clean" to delete "ckt_traversal.txt" and "sta".
+
+Functions in main.cpp:
+    
+        // Do delay value interpolation
+        double delayInterpolate(string gateType, double inputSlew, double outLoad)
+
+        // Do slew value interpolation
+        double slewInterpolate(string gateType, double inputSlew, double outLoad)
+
+        // Compute each gate delay and slew value
+        void computeGateDelay(int gateIndex)
+
+        // Break DFF into an output pin and an input pin with no connections between them
+        void breakDFF()
+
+        // Forward Traverse (Max circuit Delay)
+        void topologicalTraversal()
+
+        // Back Traverse (slack time for each gate)
+        void backTraversal()
+
+        // Compute slack of each gate
+        void computeSlack()
+
+        // Function to find the critical path
+        vector<int> findCriticalPath(map<int, double>& slackTime, vector< list<int> >& gates)
+
+        // Output information to kt_traversal.txt
+        int outputToFile()
+
+        // Read Circuit file
+        int parseCircuit(char *fName)
+
+        // Read Library File
+        int parseLib(char *fName)
+
+        // Main
+        int main(int argc, char* argv[]) {
+            
+            // Step 1: parse Lib and circuit file to store inputs and outputs of circuit and store all information of circuit types in various data structures.
+            // Step 2: Break DFF into an output pin and an input pin with no connections between them
+            // Step 3: start forward traverse the gates by topological way
+            // Step 4: Compute the required arrival time for each primary output
+            // Step 5: Backward traversal to compute the required arrival time for each gate
+            // Step 6: Compute the slack for each gate
+            // Step 7: Determine the critical path
+            // Step 8: Print out in "ckt_traversal.txt"
+            return 0;
+        }
+
+
